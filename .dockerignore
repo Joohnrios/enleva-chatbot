@@ -1,0 +1,36 @@
+# Build context exclusions — secrets and local artifacts stay out of the image.
+.venv/
+venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.git/
+.gitignore
+.cursor/
+.idea/
+.vscode/
+
+# Runtime data & secrets (mounted / injected at runtime)
+data/
+.env
+.env.*
+!.env.example
+
+# Not needed in the image
+tests/
+docs/
+scripts/archive/
+cms/db.sqlite3
+cms/staticfiles/
+*.md
+!frontend/**/*.md
+*.xlsx
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,107 @@
+# Enleva chatbot — piloto interno (Docker Compose)
+#
+# Com REDIS_URL configurado, rate limit e histórico multi-turno são
+# compartilhados entre workers/réplicas. Sem Redis, ficam em memória
+# de *um* processo — não escale o chatbot sem Redis.
+#
+# Postgres + pgvector: schema da BC (Django CMS = dono das migrations).
+# FastAPI indexa embeddings em kb_chunk/kb_anchor (VECTOR_STORE=pgvector).
+# Chroma permanece como rollback (VECTOR_STORE=chroma + volume data/chroma).
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: enleva-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-enleva_kb}
+      POSTGRES_USER: ${POSTGRES_USER:-enleva}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-enleva}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-enleva} -d ${POSTGRES_DB:-enleva_kb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: enleva-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ./data/redis:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  cms:
+    build:
+      context: .
+      dockerfile: Dockerfile.cms
+    image: enleva-cms:local
+    container_name: enleva-cms
+    ports:
+      - "${CMS_PORT:-8001}:8001"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      CMS_USE_SQLITE: "false"
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-127.0.0.1,localhost,cms,enleva-cms}
+      CMS_IMPORT_ON_START: ${CMS_IMPORT_ON_START:-true}
+    volumes:
+      # Hot-reload de código CMS em dev (migrations/admin)
+      - ./cms:/app/cms
+      - ./knowledge:/app/knowledge
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  enleva-chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        EMBEDDING_MODEL: ${EMBEDDING_MODEL:-sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2}
+    image: enleva-chatbot:local
+    container_name: enleva-chatbot
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # Garante paths relativos a /app dentro do container
+      KNOWLEDGE_DIR: ./knowledge
+      CHROMA_DIR: ./data/chroma
+      LOG_DIR: ./data/logs
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      KB_SQL_ENABLED: ${KB_SQL_ENABLED:-true}
+      INGEST_SOURCE: ${INGEST_SOURCE:-auto}
+      VECTOR_STORE: ${VECTOR_STORE:-pgvector}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+    volumes:
+      # Conteúdo da BC montado (não bakeado no build) — atualiza sem rebuild
+      - ./knowledge:/app/knowledge
+      # Persistência do índice entre restarts
+      - ./data/chroma:/app/data/chroma
+      # Persistência de logs para retenção/purge
+      - ./data/logs:/app/data/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      cms:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    restart: unless-stopped

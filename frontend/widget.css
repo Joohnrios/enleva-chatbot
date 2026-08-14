@@ -1,0 +1,193 @@
+/* Tema padrão Enleva — SOMAENTE no root do widget (não vaza para :root da intranet) */
+#enleva-chat-root {
+  /* Medidos em intranet.enlevasaude.com (DevTools) + tokens --lp-* */
+  --enleva-chat-primary-color: #1c51a0;
+  --enleva-chat-accent-color: #F05B78;
+  --enleva-chat-bg: #EEF6F7;
+  --enleva-chat-surface: #FFFFFF;
+  --enleva-chat-text-color: #707276;
+  --enleva-chat-muted-color: #7A7E83;
+  --enleva-chat-border-color: #D9E0E3;
+  --enleva-chat-user-bg: #1c51a0;
+  --enleva-chat-on-primary: #FCFCFC;
+  --enleva-chat-shadow: 0 12px 40px rgba(28, 81, 160, 0.22);
+  --enleva-chat-radius: 16px;
+
+  /* Aliases internos */
+  --enleva-bg: var(--enleva-chat-primary-color);
+  --enleva-accent: var(--enleva-chat-accent-color);
+  --enleva-surface: var(--enleva-chat-bg);
+  --enleva-text: var(--enleva-chat-text-color);
+  --enleva-muted: var(--enleva-chat-muted-color);
+  --enleva-border: var(--enleva-chat-border-color);
+  --enleva-user: var(--enleva-chat-user-bg);
+  --enleva-shadow: var(--enleva-chat-shadow);
+  --enleva-radius: var(--enleva-chat-radius);
+
+  position: fixed;
+  z-index: 99999;
+  bottom: 24px;
+  right: 24px;
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+#enleva-chat-root.enleva-left {
+  right: auto;
+  left: 24px;
+}
+
+.enleva-launcher {
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--enleva-chat-primary-color);
+  color: var(--enleva-chat-on-primary);
+  cursor: pointer;
+  box-shadow: var(--enleva-chat-shadow);
+  font-size: 22px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+}
+
+.enleva-launcher-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.enleva-panel {
+  display: none;
+  flex-direction: column;
+  width: min(380px, calc(100vw - 32px));
+  height: min(520px, calc(100vh - 100px));
+  background: var(--enleva-chat-surface);
+  color: var(--enleva-chat-text-color);
+  border: 1px solid var(--enleva-chat-border-color);
+  border-radius: var(--enleva-chat-radius);
+  box-shadow: var(--enleva-chat-shadow);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.enleva-panel.open {
+  display: flex;
+}
+
+.enleva-header {
+  background: linear-gradient(
+    135deg,
+    var(--enleva-chat-primary-color),
+    var(--enleva-chat-accent-color)
+  );
+  color: var(--enleva-chat-on-primary);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.enleva-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.enleva-header button {
+  background: transparent;
+  border: 0;
+  color: var(--enleva-chat-on-primary);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.enleva-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--enleva-chat-bg);
+}
+
+.enleva-msg {
+  max-width: 88%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.enleva-msg.bot {
+  align-self: flex-start;
+  background: var(--enleva-chat-surface);
+  border: 1px solid var(--enleva-chat-border-color);
+  color: var(--enleva-chat-text-color);
+}
+
+.enleva-msg.bot.refused {
+  background: #f0f2f3;
+  border-color: #c8d0d2;
+  color: #5a6064;
+}
+
+.enleva-refused-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--enleva-chat-muted-color);
+  margin-bottom: 6px;
+}
+
+.enleva-msg.user {
+  align-self: flex-end;
+  background: var(--enleva-chat-user-bg, var(--enleva-chat-primary-color));
+  color: var(--enleva-chat-on-primary);
+}
+
+.enleva-sources {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--enleva-chat-muted-color);
+}
+
+.enleva-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--enleva-chat-border-color);
+  background: var(--enleva-chat-surface);
+}
+
+.enleva-form input {
+  flex: 1;
+  border: 1px solid var(--enleva-chat-border-color);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--enleva-chat-text-color);
+  background: #fff;
+}
+
+.enleva-form button {
+  border: 0;
+  border-radius: 10px;
+  background: var(--enleva-chat-primary-color);
+  color: var(--enleva-chat-on-primary);
+  padding: 0 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.enleva-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

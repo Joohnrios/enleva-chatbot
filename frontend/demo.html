@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rede Enleva — Demo Intranet + Chat</title>
+  <style>
+    :root {
+      --bg: #EEF6F7;
+      --side: #1c51a0;
+      --accent: #F05B78;
+      --card: #ffffff;
+      --text: #707276;
+      --muted: #7A7E83;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+    }
+    aside {
+      background: linear-gradient(180deg, var(--side), #1e4076);
+      color: #fff;
+      padding: 24px 16px;
+    }
+    aside h1 { font-size: 18px; margin: 0 0 24px; letter-spacing: 0.02em; }
+    aside a {
+      display: block;
+      color: rgba(255,255,255,0.9);
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+    }
+    aside a:hover { background: rgba(255,255,255,0.12); }
+    aside a.active { background: var(--accent); color: #fff; }
+    main { padding: 28px; }
+    .hero {
+      margin-bottom: 24px;
+    }
+    .hero h2 { margin: 0 0 8px; font-size: 28px; color: #000724; }
+    .hero p { margin: 0; color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(28, 81, 160, 0.1);
+      border: 1px solid #D9E0E3;
+    }
+    .card h3 { margin: 0 0 8px; font-size: 16px; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
+    @media (max-width: 720px) {
+      body { grid-template-columns: 1fr; }
+      aside { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <aside>
+    <h1>Rede Enleva</h1>
+    <a class="active" href="#">Início</a>
+    <a href="#">RH</a>
+    <a href="#">TI</a>
+    <a href="#">Chamados</a>
+    <a href="#">Documentos</a>
+  </aside>
+  <main>
+    <div class="hero">
+      <h2>Intranet</h2>
+      <p>Demo visual — o assistente aparece como bolha flutuante no canto.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Abrir chamado</h3>
+        <p>Solicitações de RH e TI pelo portal oficial.</p>
+      </div>
+      <div class="card">
+        <h3>Políticas</h3>
+        <p>Documentos internos classificados e publicados.</p>
+      </div>
+      <div class="card">
+        <h3>Benefícios</h3>
+        <p>Informações gerais de elegibilidade e prazos.</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    window.EnlevaChatConfig = {
+      apiUrl: "/chat",
+      position: "right",
+      // Defaults = paleta Enleva (intranet). Sobrescreva se precisar:
+      // primaryColor: "#1c51a0",
+      // accentColor: "#F05B78",
+      // bgColor: "#EEF6F7",
+      // textColor: "#707276",
+      // icon: "💬"
+      // apiToken: ""
+    };
+  </script>
+  <script src="/static/widget.js" defer></script>
+</body>
+</html>
